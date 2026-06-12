@@ -36,27 +36,20 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Bắt lỗi 401 chuẩn chỉnh
+
                 .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
                     response.sendError(401, "Unauthorized");
                 }))
                 .authorizeHttpRequests(auth -> auth
-                        // 1. PUBLIC: Ai cũng vào được (Đăng ký, Login, Refresh)
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/error").permitAll()
-
-                        // 2. ADMIN: Chỉ Quản trị hệ thống (Quản lý User)
+                        .requestMatchers("/api/v1/courts/**").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
 
-                        // 3. MANAGER: Chủ sân (Duyệt lịch, Quản lý sân, Upload ảnh)
-                        // (Cho phép cả Admin thăm dò khu vực Manager)
                         .requestMatchers("/api/v1/manager/**").hasAnyRole("MANAGER", "ADMIN")
 
-                        // 4. CUSTOMER: Khách hàng (Đặt sân, Xem lịch sử của mình)
-                        // (Cho phép cả Admin và Manager thăm dò khu vực Customer)
                         .requestMatchers("/api/v1/customer/**").hasAnyRole("CUSTOMER", "MANAGER", "ADMIN")
 
-                        // Các request không khớp rule nào -> Phải đăng nhập
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

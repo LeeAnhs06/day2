@@ -20,9 +20,7 @@ public class BookingController {
 
     private final BookingService bookingService;
 
-    // ==========================================
-    // KHU VỰC CUSTOMER: Đặt sân & Xem lịch sử
-    // ==========================================
+    //Đặt sân & Xem lịch sử
 
     @PostMapping("/api/v1/customer/bookings")
     public ResponseEntity<ApiResponse<BookingResponse>> createBooking(
@@ -52,9 +50,8 @@ public class BookingController {
                 .build());
     }
 
-    // ==========================================
-    // KHU VỰC MANAGER/ADMIN: Duyệt & Từ chối lịch
-    // ==========================================
+
+    // Duyệt & Từ chối lịch
 
     @PutMapping("/api/v1/manager/bookings/{id}/approve")
     public ResponseEntity<ApiResponse<BookingResponse>> approveBooking(@PathVariable Long id) {

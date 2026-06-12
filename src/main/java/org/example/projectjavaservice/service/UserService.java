@@ -1,9 +1,6 @@
 package org.example.projectjavaservice.service;
 
-import org.example.projectjavaservice.dto.ChangePasswordRequest;
-import org.example.projectjavaservice.dto.RegisterRequest;
-import org.example.projectjavaservice.dto.UserResponse;
-import org.example.projectjavaservice.dto.UserUpdateRequest;
+import org.example.projectjavaservice.dto.*;
 import org.springframework.data.domain.Page;
 
 public interface UserService {
@@ -14,4 +11,6 @@ public interface UserService {
     UserResponse updateUser(Long id, UserUpdateRequest request);
     void deleteUser(Long id);
     void changePassword(Long userId, ChangePasswordRequest request);
+    void forgotPassword(ForgotPasswordRequest request);
+    void resetPassword(ResetPasswordRequest request);
 }

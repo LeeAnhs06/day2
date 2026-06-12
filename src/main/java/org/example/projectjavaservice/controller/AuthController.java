@@ -40,10 +40,8 @@ public class AuthController {
     }
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Object>> logout(HttpServletRequest request) {
-        // Lấy header Authorization
         String authHeader = request.getHeader("Authorization");
 
-        // Gọi service xử lý blacklist
         authService.logout(authHeader);
 
         return ResponseEntity.ok(ApiResponse.builder()
@@ -53,7 +51,6 @@ public class AuthController {
                 .build());
     }
 
-    // Thêm hàm này vào AuthController
 
 @PostMapping("/refresh")
 public ResponseEntity<ApiResponse<LoginResponse>> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
@@ -64,4 +61,26 @@ public ResponseEntity<ApiResponse<LoginResponse>> refreshToken(@Valid @RequestBo
             .data(loginResponse)
             .build());
 }
+
+    // API Yêu cầu gửi OTP
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<Object>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        userService.forgotPassword(request);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .message("OTP has been sent to your email")
+                .data(null)
+                .build());
+    }
+
+    // API Nhập OTP + Mật khẩu mới để reset
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<Object>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        userService.resetPassword(request);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .message("Password reset successfully")
+                .data(null)
+                .build());
+    }
 }

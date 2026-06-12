@@ -11,7 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/customer/profile") // Khai báo chuẩn khu vực Customer
+@RequestMapping("/api/v1/customer/profile")
 @RequiredArgsConstructor
 public class CustomerController {
 
@@ -22,7 +22,6 @@ public class CustomerController {
             @Valid @RequestBody ChangePasswordRequest request,
             Authentication authentication) {
 
-        // Lấy userId từ Token
         Long userId = ((CustomUserDetails) authentication.getPrincipal()).getId();
 
         userService.changePassword(userId, request);

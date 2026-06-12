@@ -35,8 +35,8 @@ public class Booking {
     @Column(name = "booking_date", nullable = false)
     private LocalDate bookingDate;
 
-    @Column(name = "time_slot", nullable = false)
-    private String timeSlot;
+@Column(name = "time_slot_id", nullable = false)
+private Long timeSlotId;
 
     @Column(name = "total_price", nullable = false)
     private BigDecimal totalPrice;

@@ -10,6 +10,6 @@ import java.util.List;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByUserId(Long userId);
     List<Booking> findByCourtIdAndBookingDate(Long courtId, LocalDate bookingDate);
-    boolean existsByCourtIdAndBookingDateAndTimeSlotAndStatusIn(
-            Long courtId, LocalDate bookingDate, String timeSlot, List<BookingStatus> statuses);
+    boolean existsByCourtIdAndBookingDateAndTimeSlotIdAndStatusIn(
+        Long courtId, LocalDate bookingDate, Long timeSlotId, List<BookingStatus> statuses);
 }

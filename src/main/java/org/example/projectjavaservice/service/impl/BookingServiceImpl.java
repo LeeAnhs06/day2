@@ -6,17 +6,20 @@ import org.example.projectjavaservice.dto.BookingResponse;
 import org.example.projectjavaservice.entity.Booking;
 import org.example.projectjavaservice.entity.BookingStatus;
 import org.example.projectjavaservice.entity.Court;
+import org.example.projectjavaservice.entity.TimeSlot;
 import org.example.projectjavaservice.entity.User;
 import org.example.projectjavaservice.exception.BadRequestException;
 import org.example.projectjavaservice.exception.ConflictException;
 import org.example.projectjavaservice.exception.NotFoundException;
 import org.example.projectjavaservice.repository.BookingRepository;
 import org.example.projectjavaservice.repository.CourtRepository;
+import org.example.projectjavaservice.repository.TimeSlotRepository;
 import org.example.projectjavaservice.repository.UserRepository;
 import org.example.projectjavaservice.service.BookingService;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,6 +30,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final CourtRepository courtRepository;
+    private final TimeSlotRepository timeSlotRepository;
 
     @Override
     public BookingResponse createBooking(Long userId, BookingRequest request) {
@@ -36,26 +40,31 @@ public class BookingServiceImpl implements BookingService {
         Court court = courtRepository.findById(request.getCourtId())
                 .orElseThrow(() -> new NotFoundException("Court not found"));
 
+        TimeSlot timeSlot = timeSlotRepository.findById(request.getTimeSlotId())
+                .orElseThrow(() -> new NotFoundException("Time slot not found"));
 
+        if (request.getBookingDate().isEqual(LocalDate.now())) {
+            LocalTime startTime = LocalTime.parse(timeSlot.getStartTime());
+            if (startTime.isBefore(LocalTime.now())) {
+                throw new BadRequestException("Cannot book a time slot in the past");
+            }
+        }
 
-
-        // kiểm tra xem sân này có đang được đặt ở khung giờ này không
-        boolean isConflict = bookingRepository.existsByCourtIdAndBookingDateAndTimeSlotAndStatusIn(
+        boolean isConflict = bookingRepository.existsByCourtIdAndBookingDateAndTimeSlotIdAndStatusIn(
                 court.getId(),
                 request.getBookingDate(),
-                request.getTimeSlot(),
+                request.getTimeSlotId(),
                 Arrays.asList(BookingStatus.CONFIRMED, BookingStatus.PENDING)
         );
 
         if (isConflict) {
             throw new ConflictException("Court is already booked for this date and time slot");
         }
-
         Booking booking = Booking.builder()
                 .user(user)
                 .court(court)
                 .bookingDate(request.getBookingDate())
-                .timeSlot(request.getTimeSlot())
+                .timeSlotId(request.getTimeSlotId())
                 .totalPrice(court.getPricePerHour())
                 .status(BookingStatus.PENDING)
                 .build();
@@ -75,7 +84,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingResponse> getBookingsByUserId(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        
+
         List<Booking> bookings = bookingRepository.findByUserId(userId);
         return bookings.stream()
                 .map(this::mapToResponse)
@@ -95,26 +104,11 @@ public class BookingServiceImpl implements BookingService {
         bookingRepository.save(booking);
     }
 
-    private BookingResponse mapToResponse(Booking booking) {
-        return BookingResponse.builder()
-                .id(booking.getId())
-                .courtId(booking.getCourt().getId())
-                .courtName(booking.getCourt().getName())
-                .userId(booking.getUser().getId())
-                .username(booking.getUser().getUsername())
-                .bookingDate(booking.getBookingDate())
-                .timeSlot(booking.getTimeSlot())
-                .totalPrice(booking.getTotalPrice())
-                .status(booking.getStatus().name())
-                .build();
-    }
-
-        @Override
+    @Override
     public BookingResponse approveBooking(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking not found"));
 
-        // Chỉ được duyệt khi trạng thái đang là PENDING (Chờ duyệt)
         if (booking.getStatus() != BookingStatus.PENDING) {
             throw new BadRequestException("Only pending bookings can be approved");
         }
@@ -129,7 +123,6 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking not found"));
 
-        // Chỉ được từ chối khi trạng thái đang là PENDING
         if (booking.getStatus() != BookingStatus.PENDING) {
             throw new BadRequestException("Only pending bookings can be rejected");
         }
@@ -137,5 +130,26 @@ public class BookingServiceImpl implements BookingService {
         booking.setStatus(BookingStatus.REJECTED);
         Booking updatedBooking = bookingRepository.save(booking);
         return mapToResponse(updatedBooking);
+    }
+
+    private BookingResponse mapToResponse(Booking booking) {
+        String timeSlotStr = "Unknown";
+        if (booking.getTimeSlotId() != null) {
+            timeSlotStr = timeSlotRepository.findById(booking.getTimeSlotId())
+                    .map(ts -> ts.getStartTime() + "-" + ts.getEndTime())
+                    .orElse("Unknown");
+        }
+
+        return BookingResponse.builder()
+                .id(booking.getId())
+                .courtId(booking.getCourt().getId())
+                .courtName(booking.getCourt().getName())
+                .userId(booking.getUser().getId())
+                .username(booking.getUser().getUsername())
+                .bookingDate(booking.getBookingDate())
+                .timeSlot(timeSlotStr)
+                .totalPrice(booking.getTotalPrice())
+                .status(booking.getStatus().name())
+                .build();
     }
 }
