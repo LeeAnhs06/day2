@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "courts")
@@ -29,4 +30,8 @@ public class Court {
 
     @Column(name = "is_available", nullable = false)
     private boolean isAvailable = true;
+
+
+    @OneToMany(mappedBy = "court", cascade = CascadeType.ALL)
+    private List<CourtImage> images;
 }
