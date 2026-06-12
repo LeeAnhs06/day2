@@ -68,4 +68,21 @@ public class GlobalExceptionHandler {
                         .data(null)
                         .build());
     }
+
+        // Bắt lỗi kết nối Cloudinary (UC-05)
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Map<String, Object>> handleCloudError(RuntimeException ex) {
+        // Chỉ bắt những lỗi có chứa chuỗi thông báo Cloud của chúng ta
+        if (ex.getMessage().contains("Cloud storage service")) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("timestamp", java.time.LocalDateTime.now());
+            error.put("status", 503);
+            error.put("error", "Service Unavailable");
+            error.put("message", ex.getMessage()); // Lấy đúng câu tiếng Anh ở FileServiceImpl
+            error.put("path", ""); // Có thể inject HttpServletRequest để lấy path
+            return ResponseEntity.status(503).body(error);
+        }
+        // Các lỗi RuntimeException khác thì trả 500 bình thường
+        return ResponseEntity.status(500).body(Map.of("error", "Internal Server Error"));
+    }
 }
