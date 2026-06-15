@@ -2,8 +2,10 @@ package org.example.projectjavaservice.aspect;
 
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Around; 
 import org.aspectj.lang.annotation.Aspect;
 import org.example.projectjavaservice.dto.BookingRequest;
 import org.slf4j.Logger;
@@ -12,10 +14,26 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-@RequiredArgsConstructor
 public class LoggingAspect {
 
     private static final Logger log = LoggerFactory.getLogger(LoggingAspect.class);
+
+    @Around("execution(* org.example.projectjavaservice.service.impl.*.*(..))")
+    public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+        long startTime = System.currentTimeMillis();
+
+        Object result = joinPoint.proceed();
+
+        long endTime = System.currentTimeMillis();
+        long executionTime = endTime - startTime;
+
+        log.info("[PERFORMANCE] Method: {} executed in {} ms",
+                joinPoint.getSignature().getName(),
+                executionTime);
+
+        return result;
+    }
+
 
     @AfterReturning(
             pointcut = "execution(* org.example.projectjavaservice.service.impl.BookingServiceImpl.createBooking(..))",
