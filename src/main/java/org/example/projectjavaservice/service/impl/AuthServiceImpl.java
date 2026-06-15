@@ -5,13 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.example.projectjavaservice.dto.Request.LoginRequest;
 import org.example.projectjavaservice.dto.Response.LoginResponse;
 import org.example.projectjavaservice.dto.Request.RefreshTokenRequest;
-import org.example.projectjavaservice.entity.TokenBlacklist;
 import org.example.projectjavaservice.exception.BadRequestException;
-import org.example.projectjavaservice.repository.TokenBlacklistRepository;
 import org.example.projectjavaservice.security.CustomUserDetails;
 import org.example.projectjavaservice.security.CustomUserDetailsService;
 import org.example.projectjavaservice.security.JwtUtil;
 import org.example.projectjavaservice.service.AuthService;
+import org.example.projectjavaservice.service.RedisService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,16 +18,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-    private final TokenBlacklistRepository tokenBlacklistRepository;
+    // ĐÃ XÓA: private final TokenBlacklistRepository tokenBlacklistRepository;
     private final CustomUserDetailsService userDetailsService;
+    private final RedisService redisService; // DÙNG REDIS SERVICE
 
     @Override
     public LoginResponse login(LoginRequest request) {
@@ -62,18 +60,20 @@ public class AuthServiceImpl implements AuthService {
             throw new BadRequestException("Invalid or expired token");
         }
 
-        if (tokenBlacklistRepository.existsByToken(token)) {
+        // Kiểm tra xem token đã bị blacklist trên Redis chưa
+        if (redisService.isTokenBlacklisted(token)) {
             return;
         }
 
-        Instant expiredAt = claims.getExpiration().toInstant();
+        // TÍNH THỜI GIAN CÒN SỐNG CỦA TOKEN
+        long now = System.currentTimeMillis();
+        long expirationTime = claims.getExpiration().getTime();
+        long remainingTimeInMillis = expirationTime - now;
 
-        TokenBlacklist blacklistEntry = TokenBlacklist.builder()
-                .token(token)
-                .expiredAt(expiredAt)
-                .build();
-
-        tokenBlacklistRepository.save(blacklistEntry);
+        // Chỉ lưu vào Redis nếu token chưa hết hạn hoàn toàn
+        if (remainingTimeInMillis > 0) {
+            redisService.saveTokenToBlacklist(token, remainingTimeInMillis);
+        }
     }
 
     @Override
@@ -85,7 +85,8 @@ public class AuthServiceImpl implements AuthService {
             throw new BadRequestException("Invalid or expired refresh token");
         }
 
-        if (tokenBlacklistRepository.existsByToken(refreshToken)) {
+        // ĐỔI SANG REDIS: Kiểm tra xem refresh token này đã bị thu hồi chưa
+        if (redisService.isTokenBlacklisted(refreshToken)) {
             throw new BadRequestException("Refresh token has been revoked");
         }
 
@@ -95,12 +96,15 @@ public class AuthServiceImpl implements AuthService {
         String newAccessToken = jwtUtil.generateAccessToken(userDetails);
         String newRefreshToken = jwtUtil.generateRefreshToken(userDetails);
 
-        Instant expiredAt = claims.getExpiration().toInstant();
-        TokenBlacklist oldRefreshToken = TokenBlacklist.builder()
-                .token(refreshToken)
-                .expiredAt(expiredAt)
-                .build();
-        tokenBlacklistRepository.save(oldRefreshToken);
+        // ĐỔI SANG REDIS: Lưu cái RefreshToken cũ vào Redis để chống dùng lại (Replay Attack)
+        // Tính thời gian sống còn lại của cái refreshToken cũ
+        long now = System.currentTimeMillis();
+        long expirationTime = claims.getExpiration().getTime();
+        long remainingTimeInMillis = expirationTime - now;
+
+        if (remainingTimeInMillis > 0) {
+            redisService.saveTokenToBlacklist(refreshToken, remainingTimeInMillis);
+        }
 
         return LoginResponse.builder()
                 .accessToken(newAccessToken)

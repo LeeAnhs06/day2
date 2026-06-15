@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.example.projectjavaservice.service.RedisService; // ĐÃ ĐỔI IMPORT
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,8 +15,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import org.example.projectjavaservice.repository.TokenBlacklistRepository;
 
 import java.io.IOException;
 
@@ -27,7 +26,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
-    private final TokenBlacklistRepository tokenBlacklistRepository;
+    private final RedisService redisService; // ĐÃ ĐỔI TỪ REPOSITORY SANG REDIS SERVICE
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -53,10 +52,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 boolean isIdMatch = tokenId != null && tokenId.equals(dbUserId);
                 boolean isAccountActive = userDetails.isEnabled();
 
-                boolean isTokenRevoked = tokenBlacklistRepository.existsByToken(jwt);
+                // ---------------------------------------------------------
+                // KIỂM TRA BLACKLIST BẰNG REDIS (Siêu nhanh)
+                // Đã đổi hàm kiểm tra từ DB sang Redis
+                boolean isTokenRevoked = redisService.isTokenBlacklisted(jwt);
                 if (isTokenRevoked) {
                     response.sendError(HttpServletResponse.SC_FORBIDDEN, "Token has been revoked");
-                    return;
+                    return; // Dừng request ngay lập tức
                 }
                 if (isIdMatch && isAccountActive) {
                     UsernamePasswordAuthenticationToken authenticationToken =
