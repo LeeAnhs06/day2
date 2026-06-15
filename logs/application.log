@@ -1,1 +1,29 @@
 2026-06-15T00:00:48.060+07:00  WARN 29220 --- [project] [HikariPool-28:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-28 - Thread starvation or clock leap detected (housekeeper delta=8h24m59s228ms156µs700ns).
+2026-06-15T12:35:43.012+07:00  INFO 17040 --- [project] [restartedMain] o.e.p.ProjectJavaServiceApplication      : Starting ProjectJavaServiceApplication using Java 17.0.18 with PID 17040 (C:\Users\Admin\Downloads\ProjectJavaService\build\classes\java\main started by Admin in C:\Users\Admin\Downloads\ProjectJavaService)
+2026-06-15T12:35:43.019+07:00  INFO 17040 --- [project] [restartedMain] o.e.p.ProjectJavaServiceApplication      : No active profile set, falling back to 1 default profile: "default"
+2026-06-15T12:35:45.987+07:00  INFO 17040 --- [project] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-06-15T12:35:45.987+07:00  INFO 17040 --- [project] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.21]
+2026-06-15T12:35:46.439+07:00  INFO 17040 --- [project] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-06-15T12:35:46.571+07:00  INFO 17040 --- [project] [restartedMain] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.12.Final
+2026-06-15T12:35:47.640+07:00  INFO 17040 --- [project] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-06-15T12:35:47.986+07:00  INFO 17040 --- [project] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7eb14322
+2026-06-15T12:35:47.990+07:00  INFO 17040 --- [project] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-06-15T12:35:48.174+07:00  INFO 17040 --- [project] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/badminton?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.45
+	Default catalog/schema: badminton/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-06-15T12:35:50.672+07:00  INFO 17040 --- [project] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-15T12:35:53.474+07:00  INFO 17040 --- [project] [restartedMain] o.e.p.ProjectJavaServiceApplication      : Started ProjectJavaServiceApplication in 11.174 seconds (process running for 12.45)
+2026-06-15T12:36:25.156+07:00  INFO 17040 --- [project] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-06-15T12:36:26.570+07:00  INFO 17040 --- [project] [http-nio-8080-exec-1] o.e.p.aspect.LoggingAspect               : [PERFORMANCE] Method: register executed in 1050 ms
+2026-06-15T12:36:43.457+07:00  INFO 17040 --- [project] [http-nio-8080-exec-4] o.e.p.aspect.LoggingAspect               : [PERFORMANCE] Method: login executed in 599 ms
+2026-06-15T12:39:37.397+07:00  INFO 17040 --- [project] [http-nio-8080-exec-7] o.e.p.aspect.LoggingAspect               : [PERFORMANCE] Method: changePassword executed in 321 ms
+2026-06-15T13:00:48.986+07:00  WARN 17040 --- [project] [http-nio-8080-exec-10] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.example.projectjavaservice.exception.ConflictException: Username already exists]

@@ -1,10 +1,10 @@
 package org.example.projectjavaservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.projectjavaservice.dto.BookingRequest;
-import org.example.projectjavaservice.dto.BookingResponse;
+import org.example.projectjavaservice.dto.Request.BookingRequest;
+import org.example.projectjavaservice.dto.Response.BookingResponse;
 import org.example.projectjavaservice.entity.Booking;
-import org.example.projectjavaservice.entity.BookingStatus;
+import org.example.projectjavaservice.entity.enums.BookingStatus;
 import org.example.projectjavaservice.entity.Court;
 import org.example.projectjavaservice.entity.TimeSlot;
 import org.example.projectjavaservice.entity.User;

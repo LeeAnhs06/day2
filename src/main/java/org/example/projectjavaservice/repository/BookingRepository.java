@@ -1,7 +1,7 @@
 package org.example.projectjavaservice.repository;
 
 import org.example.projectjavaservice.entity.Booking;
-import org.example.projectjavaservice.entity.BookingStatus;
+import org.example.projectjavaservice.entity.enums.BookingStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;

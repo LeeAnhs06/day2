@@ -1,7 +1,7 @@
 package org.example.projectjavaservice.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.projectjavaservice.dto.ApiResponse;
+import org.example.projectjavaservice.dto.Response.ApiResponse;
 import org.example.projectjavaservice.service.FileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,6 +1,7 @@
 package org.example.projectjavaservice.service;
 
-import org.example.projectjavaservice.dto.*;
+import org.example.projectjavaservice.dto.Request.*;
+import org.example.projectjavaservice.dto.Response.UserResponse;
 import org.springframework.data.domain.Page;
 
 public interface UserService {

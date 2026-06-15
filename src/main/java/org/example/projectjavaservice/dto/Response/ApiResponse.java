@@ -1,4 +1,4 @@
-package org.example.projectjavaservice.dto;
+package org.example.projectjavaservice.dto.Response;
 
 import lombok.*;
 

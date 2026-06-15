@@ -1,8 +1,8 @@
 package org.example.projectjavaservice.service;
 
-import org.example.projectjavaservice.dto.LoginRequest;
-import org.example.projectjavaservice.dto.LoginResponse;
-import org.example.projectjavaservice.dto.RefreshTokenRequest;
+import org.example.projectjavaservice.dto.Request.LoginRequest;
+import org.example.projectjavaservice.dto.Response.LoginResponse;
+import org.example.projectjavaservice.dto.Request.RefreshTokenRequest;
 
 public interface AuthService {
     LoginResponse login(LoginRequest request);

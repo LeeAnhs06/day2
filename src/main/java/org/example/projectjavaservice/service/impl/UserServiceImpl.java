@@ -1,8 +1,9 @@
 package org.example.projectjavaservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.projectjavaservice.dto.*;
-import org.example.projectjavaservice.entity.Role;
+import org.example.projectjavaservice.dto.Request.*;
+import org.example.projectjavaservice.dto.Response.UserResponse;
+import org.example.projectjavaservice.entity.enums.Role;
 import org.example.projectjavaservice.entity.User;
 import org.example.projectjavaservice.exception.BadRequestException;
 import org.example.projectjavaservice.exception.ConflictException;

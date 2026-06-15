@@ -2,8 +2,8 @@ package org.example.projectjavaservice.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.projectjavaservice.dto.ApiResponse;
-import org.example.projectjavaservice.dto.ChangePasswordRequest;
+import org.example.projectjavaservice.dto.Response.ApiResponse;
+import org.example.projectjavaservice.dto.Request.ChangePasswordRequest;
 import org.example.projectjavaservice.security.CustomUserDetails;
 import org.example.projectjavaservice.service.UserService;
 import org.springframework.http.ResponseEntity;

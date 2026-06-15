@@ -1,4 +1,4 @@
-package org.example.projectjavaservice.dto;
+package org.example.projectjavaservice.dto.Request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

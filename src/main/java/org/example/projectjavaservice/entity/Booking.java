@@ -2,6 +2,7 @@ package org.example.projectjavaservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.projectjavaservice.entity.enums.BookingStatus;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;

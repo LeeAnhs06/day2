@@ -1,8 +1,13 @@
 package org.example.projectjavaservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.projectjavaservice.dto.*;
-import org.example.projectjavaservice.entity.BookingStatus;
+import org.example.projectjavaservice.dto.Request.CourtCreateRequest;
+import org.example.projectjavaservice.dto.Request.TimeSlotCreateRequest;
+import org.example.projectjavaservice.dto.Response.CourtDetailResponse;
+import org.example.projectjavaservice.dto.Response.CourtResponse;
+import org.example.projectjavaservice.dto.Response.TimeSlotAvailabilityResponse;
+import org.example.projectjavaservice.dto.Response.TimeSlotResponse;
+import org.example.projectjavaservice.entity.enums.BookingStatus;
 import org.example.projectjavaservice.entity.Court;
 import org.example.projectjavaservice.entity.TimeSlot;
 import org.example.projectjavaservice.exception.NotFoundException;

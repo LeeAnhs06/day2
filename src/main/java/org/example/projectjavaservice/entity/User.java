@@ -2,6 +2,7 @@ package org.example.projectjavaservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.projectjavaservice.entity.enums.Role;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -1,7 +1,7 @@
 package org.example.projectjavaservice.service;
 
-import org.example.projectjavaservice.dto.BookingRequest;
-import org.example.projectjavaservice.dto.BookingResponse;
+import org.example.projectjavaservice.dto.Request.BookingRequest;
+import org.example.projectjavaservice.dto.Response.BookingResponse;
 
 import java.util.List;
 

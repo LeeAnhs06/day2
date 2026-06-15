@@ -1,4 +1,4 @@
-package org.example.projectjavaservice.entity;
+package org.example.projectjavaservice.entity.enums;
 
 public enum Role {
     ADMIN,

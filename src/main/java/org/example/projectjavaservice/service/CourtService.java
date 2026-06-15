@@ -1,6 +1,10 @@
 package org.example.projectjavaservice.service;
 
-import org.example.projectjavaservice.dto.*;
+import org.example.projectjavaservice.dto.Request.CourtCreateRequest;
+import org.example.projectjavaservice.dto.Request.TimeSlotCreateRequest;
+import org.example.projectjavaservice.dto.Response.CourtDetailResponse;
+import org.example.projectjavaservice.dto.Response.CourtResponse;
+import org.example.projectjavaservice.dto.Response.TimeSlotResponse;
 
 import java.time.LocalDate;
 import java.util.List;

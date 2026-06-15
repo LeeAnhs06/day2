@@ -2,9 +2,9 @@ package org.example.projectjavaservice.service.impl;
 
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import org.example.projectjavaservice.dto.LoginRequest;
-import org.example.projectjavaservice.dto.LoginResponse;
-import org.example.projectjavaservice.dto.RefreshTokenRequest;
+import org.example.projectjavaservice.dto.Request.LoginRequest;
+import org.example.projectjavaservice.dto.Response.LoginResponse;
+import org.example.projectjavaservice.dto.Request.RefreshTokenRequest;
 import org.example.projectjavaservice.entity.TokenBlacklist;
 import org.example.projectjavaservice.exception.BadRequestException;
 import org.example.projectjavaservice.repository.TokenBlacklistRepository;

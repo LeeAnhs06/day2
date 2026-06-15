@@ -1,9 +1,9 @@
 package org.example.projectjavaservice.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.projectjavaservice.dto.ApiResponse;
-import org.example.projectjavaservice.dto.CourtDetailResponse;
-import org.example.projectjavaservice.dto.CourtResponse;
+import org.example.projectjavaservice.dto.Response.ApiResponse;
+import org.example.projectjavaservice.dto.Response.CourtDetailResponse;
+import org.example.projectjavaservice.dto.Response.CourtResponse;
 import org.example.projectjavaservice.service.CourtService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -2,9 +2,9 @@ package org.example.projectjavaservice.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.projectjavaservice.dto.ApiResponse;
-import org.example.projectjavaservice.dto.BookingRequest;
-import org.example.projectjavaservice.dto.BookingResponse;
+import org.example.projectjavaservice.dto.Response.ApiResponse;
+import org.example.projectjavaservice.dto.Request.BookingRequest;
+import org.example.projectjavaservice.dto.Response.BookingResponse;
 import org.example.projectjavaservice.security.CustomUserDetails;
 import org.example.projectjavaservice.service.BookingService;
 import org.springframework.http.HttpStatus;

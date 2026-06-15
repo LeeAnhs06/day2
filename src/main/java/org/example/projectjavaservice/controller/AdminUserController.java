@@ -2,9 +2,9 @@ package org.example.projectjavaservice.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.projectjavaservice.dto.ApiResponse;
-import org.example.projectjavaservice.dto.UserResponse;
-import org.example.projectjavaservice.dto.UserUpdateRequest;
+import org.example.projectjavaservice.dto.Response.ApiResponse;
+import org.example.projectjavaservice.dto.Response.UserResponse;
+import org.example.projectjavaservice.dto.Request.UserUpdateRequest;
 import org.example.projectjavaservice.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
