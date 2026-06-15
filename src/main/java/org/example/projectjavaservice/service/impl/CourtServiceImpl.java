@@ -1,9 +1,7 @@
 package org.example.projectjavaservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.projectjavaservice.dto.CourtDetailResponse;
-import org.example.projectjavaservice.dto.CourtResponse;
-import org.example.projectjavaservice.dto.TimeSlotAvailabilityResponse;
+import org.example.projectjavaservice.dto.*;
 import org.example.projectjavaservice.entity.BookingStatus;
 import org.example.projectjavaservice.entity.Court;
 import org.example.projectjavaservice.entity.TimeSlot;
@@ -71,6 +69,43 @@ public class CourtServiceImpl implements CourtService {
                 .location(court.getLocation())
                 .pricePerHour(court.getPricePerHour())
                 .timeSlots(slotResponses)
+                .build();
+    }
+
+        // Thêm vào CourtServiceImpl
+
+    @Override
+    public CourtResponse createCourt(CourtCreateRequest request) {
+        Court court = Court.builder()
+                .name(request.getName())
+                .location(request.getLocation())
+                .pricePerHour(request.getPricePerHour())
+                .isAvailable(true) // Mặc định sân mới luôn hoạt động
+                .build();
+
+        Court savedCourt = courtRepository.save(court);
+
+        return CourtResponse.builder()
+                .id(savedCourt.getId())
+                .name(savedCourt.getName())
+                .location(savedCourt.getLocation())
+                .pricePerHour(savedCourt.getPricePerHour())
+                .build();
+    }
+
+    @Override
+    public TimeSlotResponse createTimeSlot(TimeSlotCreateRequest request) {
+        TimeSlot timeSlot = TimeSlot.builder()
+                .startTime(request.getStartTime())
+                .endTime(request.getEndTime())
+                .build();
+
+        TimeSlot savedSlot = timeSlotRepository.save(timeSlot);
+
+        return TimeSlotResponse.builder()
+                .id(savedSlot.getId())
+                .startTime(savedSlot.getStartTime())
+                .endTime(savedSlot.getEndTime())
                 .build();
     }
 }

@@ -1,5 +1,6 @@
 package org.example.projectjavaservice.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.example.projectjavaservice.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,82 +8,67 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Hàm tiện ích tạo ErrorResponse chuẩn
+    private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, String message, HttpServletRequest request) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(status.value())
+                .error(status.getReasonPhrase())
+                .message(message)
+                .path(request.getRequestURI())
+                .build();
+        return new ResponseEntity<>(errorResponse, status);
+    }
+
+    // 400 Bad Request
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiResponse<Object>> handleBadRequest(BadRequestException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.builder()
-                        .success(false)
-                        .message(ex.getMessage())
-                        .data(null)
-                        .build());
+    public ResponseEntity<ErrorResponse> handleBadRequest(BadRequestException ex, HttpServletRequest request) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
     }
 
+    // 404 Not Found
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiResponse<Object>> handleNotFound(NotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.builder()
-                        .success(false)
-                        .message(ex.getMessage())
-                        .data(null)
-                        .build());
+    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException ex, HttpServletRequest request) {
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request);
     }
 
+    // 409 Conflict
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ApiResponse<Object>> handleConflict(ConflictException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ApiResponse.builder()
-                        .success(false)
-                        .message(ex.getMessage())
-                        .data(null)
-                        .build());
+    public ResponseEntity<ErrorResponse> handleConflict(ConflictException ex, HttpServletRequest request) {
+        return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), request);
     }
 
+    // 400 Validation Error (Sửa chuẩn SRS)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleValidation(MethodArgumentNotValidException ex) {
-        Map<String, Object> error = new HashMap<>();
-        error.put("success", false);
-        error.put("message", "Validation failed");
-        error.put("status", 400);
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        String defaultMessage = ex.getBindingResult().getFieldErrors().stream()
+                .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                .reduce((msg1, msg2) -> msg1 + "; " + msg2)
+                .orElse("Validation failed");
 
-        Map<String, String> fieldErrors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors()
-                .forEach(err -> fieldErrors.put(err.getField(), err.getDefaultMessage()));
-
-        error.put("errors", fieldErrors);
-
-        return ResponseEntity.badRequest().body(error);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, defaultMessage, request);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Object>> handleGeneral(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.builder()
-                        .success(false)
-                        .message("Internal server error")
-                        .data(null)
-                        .build());
+    // 401 Unauthorized (Khi sai tài khoản/mật khẩu)
+    @ExceptionHandler(org.springframework.security.authentication.BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentials(org.springframework.security.authentication.BadCredentialsException ex, HttpServletRequest request) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(), request);
     }
 
-        // Bắt lỗi kết nối Cloudinary (UC-05)
+    // 503 Service Unavailable (Lỗi Cloudinary - UC-05)
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, Object>> handleCloudError(RuntimeException ex) {
-        // Chỉ bắt những lỗi có chứa chuỗi thông báo Cloud của chúng ta
+    public ResponseEntity<ErrorResponse> handleCloudError(RuntimeException ex, HttpServletRequest request) {
         if (ex.getMessage().contains("Cloud storage service")) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("timestamp", java.time.LocalDateTime.now());
-            error.put("status", 503);
-            error.put("error", "Service Unavailable");
-            error.put("message", ex.getMessage()); // Lấy đúng câu tiếng Anh ở FileServiceImpl
-            error.put("path", ""); // Có thể inject HttpServletRequest để lấy path
-            return ResponseEntity.status(503).body(error);
+            return buildErrorResponse(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), request);
         }
-        // Các lỗi RuntimeException khác thì trả 500 bình thường
-        return ResponseEntity.status(500).body(Map.of("error", "Internal Server Error"));
+        // 500 Internal Server Error (Còn lại)
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", request);
     }
 }
